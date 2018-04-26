@@ -45,18 +45,7 @@ func SymbolCreate(symbol *C.zbar_symbol_t) (ret *Symbol) {
  */
 func (obj *Symbol) Create(symbol *C.zbar_symbol_t) {
 	obj.symbol = symbol
-	obj.info = &SymbolInfo{
-		Type:    int32(obj.GetType()),
-		Data:    obj.GetData(),
-		Length:  int32(obj.GetDataLength()),
-		Quality: int32(obj.GetQuality()),
-		LocSize: 0,
-		LocXY:   make([]string, 0),
-	}
-	for i := 0; i < obj.GetLocSize(); i++ {
-		obj.info.LocXY = append(obj.info.LocXY, fmt.Sprintf("%d,%d", obj.GetLocX(i), obj.GetLocY(i)))
-	}
-	obj.info.LocSize = int32(len(obj.info.LocXY))
+	obj.info = nil
 }
 
 /** copy from zbar.h
@@ -75,6 +64,20 @@ func (obj *Symbol) Next() *Symbol {
  * get gozbar SymbolInfo
  */
 func (obj *Symbol) GetInfo() *SymbolInfo {
+	if obj.info == nil {
+		obj.info = &SymbolInfo{
+			Type:    int32(obj.GetType()),
+			Data:    obj.GetData(),
+			Length:  int32(obj.GetDataLength()),
+			Quality: int32(obj.GetQuality()),
+			LocSize: 0,
+			LocXY:   make([]string, 0),
+		}
+		for i := 0; i < obj.GetLocSize(); i++ {
+			obj.info.LocXY = append(obj.info.LocXY, fmt.Sprintf("%d,%d", obj.GetLocX(i), obj.GetLocY(i)))
+		}
+		obj.info.LocSize = int32(len(obj.info.LocXY))
+	}
 	return obj.info
 }
 
@@ -139,6 +142,20 @@ func (obj *Symbol) Each(handler func(*SymbolInfo)) {
 	inst := obj
 	for {
 		handler(inst.GetInfo())
+		inst = inst.Next()
+		if inst == nil {
+			break
+		}
+	}
+}
+
+/**
+ * foreach by current symbol only data string
+ */
+func (obj *Symbol) EachData(handler func(string)) {
+	inst := obj
+	for {
+		handler(inst.GetData())
 		inst = inst.Next()
 		if inst == nil {
 			break

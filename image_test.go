@@ -38,7 +38,7 @@ func TestQrImage(t *testing.T) {
 	}
 	t.Log("result count:", ret)
 	symbol := zbarImg.FirstSymbol()
-	symbol.Each(func(info *SymbolInfo) {
+	symbol.EachData(func(info string) {
 		t.Logf("%+v\n", info)
 	})
 }
