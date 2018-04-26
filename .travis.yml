@@ -7,6 +7,6 @@ sudo: required
 dist: trusty
 group: deprecated-2017Q4
 before_install:
-- sudo apt-get install zbar-tools
+- sudo apt-get install libzbar-dev
 script:
 - go test -v 
