@@ -1,0 +1,12 @@
+language: go
+go:
+  - 1.8.x
+  - 1.9.x
+  - 1.10.x
+sudo: required
+dist: trusty
+group: deprecated-2017Q4
+before_install:
+- sudo apt-get install zbar-tools
+script:
+- go test -v 
